@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 import {
   CardStyleInterpolators,
@@ -12,6 +12,7 @@ import AuthNavigator from "./AuthNavigator";
 import routes from "../constants/routes";
 
 const Stack = createStackNavigator();
+
 
 const RootNavigator = () => {
   return (

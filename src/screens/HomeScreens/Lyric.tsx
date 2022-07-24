@@ -82,24 +82,13 @@ const Liyric = ({ navigation }) => {
         resizeMode="cover"
         source={require("../../assets/images/lyricbg.png")}
         style={[StyleSheet.absoluteFill, { height: "25%" }]}
-        // blurRadius={1.3}
       />
       <TouchableOpacity
         style={{ width: "100%", padding: 20, alignItems: "flex-start" }}
         activeOpacity={0.5}
         onPress={() => navigation.goBack()}
       >
-        <View
-          style={{
-            backgroundColor: Colors.primary,
-            borderRadius: 15,
-            padding: 2,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Icon name="arrow-back" color={Colors.white} size={28} />
-        </View>
+        <Icon name="arrow-back" color={Colors.white} size={28} />
       </TouchableOpacity>
 
       <View

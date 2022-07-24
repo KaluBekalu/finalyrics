@@ -7,4 +7,5 @@ export default Object.freeze({
   register: "registerScreen",
   home: "homeScreen",
   lyric: "lyric",
+  tracks: "tracks",
 });

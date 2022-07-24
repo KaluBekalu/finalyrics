@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Styles from "../../constants/Styles";
 import Colors from "../../constants/Colors";
@@ -17,9 +17,12 @@ import SeparatorLine from "../../components/SeparatorLine/index.tsx";
 import { LinearGradient } from "expo-linear-gradient";
 import routes from "../../constants/routes";
 import { useNavigation } from "@react-navigation/native";
+import AuthContext from "../../auth/context";
 
 const Home = ({ navigation }) => {
   const [searchKey, setSearchKey] = useState("");
+  const { user } = useContext(AuthContext);
+
   return (
     <>
       <View style={styles.top}>
@@ -40,7 +43,8 @@ const Home = ({ navigation }) => {
               Welcome back
             </Text>
             <Text style={[{ color: Colors.black, fontSize: 30 }]}>
-              Selam B.
+              {user["https://hasura.io/jwt/claims"].firstname}{" "}
+              {user["https://hasura.io/jwt/claims"].lastname.substring(0, 1)}.
             </Text>
           </View>
         </View>
@@ -116,7 +120,7 @@ const Card = () => {
   return (
     <>
       <TouchableOpacity
-        onPress={() => navigation.navigate("lyric")}
+        onPress={() => navigation.navigate(routes.tracks)}
         activeOpacity={0.4}
         style={{
           backgroundColor: "white",
