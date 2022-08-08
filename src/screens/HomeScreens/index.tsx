@@ -18,10 +18,25 @@ import { LinearGradient } from "expo-linear-gradient";
 import routes from "../../constants/routes";
 import { useNavigation } from "@react-navigation/native";
 import AuthContext from "../../auth/context";
+import Loading from "../../components/Loading/Loading";
+
+
+import { useQuery } from '@apollo/client'
+import { getAlbums } from '../../global/graphql/Queries'
+
 
 const Home = ({ navigation }) => {
   const [searchKey, setSearchKey] = useState("");
   const { user } = useContext(AuthContext);
+  const { loading, error, data } = useQuery(getAlbums);
+
+
+
+  if (loading) return <Loading />
+  if (error) {
+    console.log(error)
+    return <Text>Error</Text>
+  }
 
   return (
     <>
@@ -93,20 +108,9 @@ const Home = ({ navigation }) => {
           contentContainerStyle={{}}
           showsVerticalScrollIndicator={false}
         >
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          {data.albums.map(i => {
+            return <Card key={i.id} album={i} />
+          })}
         </ScrollView>
       </View>
     </>
@@ -115,7 +119,11 @@ const Home = ({ navigation }) => {
 
 export default Home;
 
-const Card = () => {
+type props = {
+  album: object
+}
+
+const Card = ({ album }: props) => {
   const navigation = useNavigation();
   return (
     <>
@@ -138,19 +146,19 @@ const Card = () => {
         <Image
           resizeMethod="resize"
           style={{ width: 70, height: 95, borderRadius: 15, marginRight: 10 }}
-          source={require("../../assets/images/avatar.png")}
+          source={album.albumArt ? { uri: album.albumArt } : require("../../assets/images/avatar.png")}
         />
         <View style={{ flexGrow: 1 }}>
           <View>
             <Text
               style={[{ color: Colors.black, fontSize: 25, fontWeight: "500" }]}
             >
-              Melihike
+              {album.albumTitle}
             </Text>
             <Text
               style={[{ color: Colors.black, fontSize: 20, fontWeight: "300" }]}
             >
-              Samuel T-Michael
+              {album.artist}
             </Text>
           </View>
           <SeparatorLine />
@@ -160,7 +168,7 @@ const Card = () => {
             <View style={{ flexDirection: "row" }}>
               <Icon name="musical-notes" size={20} color={Colors.primary} />
               <Text style={[{ color: Colors.black, fontSize: 20 }]}>
-                15 Tracks
+                {album.trackCount} Tracks
               </Text>
             </View>
             <View

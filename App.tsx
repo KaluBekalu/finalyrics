@@ -14,6 +14,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import authStorage from "./src/auth/storage";
 import Colors from "./src/constants/Colors";
 import Loading from "./src/components/Loading/Loading";
+import client from './src/global/graphql/graphqlClient'
+import { ApolloProvider } from '@apollo/client'
+import jwt from 'jwt-decode'
 
 export default function App() {
   const [user, setUser]: any = useState();
@@ -23,7 +26,6 @@ export default function App() {
     const user = await authStorage.getUser();
     if (user) {
       setUser(user);
-      console.log(user);
       setIsReady(true);
     } else {
       setIsReady(true);
@@ -39,13 +41,14 @@ export default function App() {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar barStyle="dark-content" backgroundColor={"white"} />
-        <NavigationContainer>
-          {!user ? <AuthNavigator /> : <HomeNavigator />}
-        </NavigationContainer>
-      </SafeAreaView>
-    </AuthContext.Provider>
+   
+      <AuthContext.Provider value={{ user, setUser }}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar barStyle="dark-content" backgroundColor={"white"} />
+          <NavigationContainer>
+            {!user ? <AuthNavigator /> : <HomeNavigator />}
+          </NavigationContainer>
+        </SafeAreaView>
+      </AuthContext.Provider>
   );
 }

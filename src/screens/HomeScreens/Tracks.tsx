@@ -6,12 +6,29 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { ScrollView } from "react-native-gesture-handler";
 import routes from "../../constants/routes";
 
+import Loading from "../../components/Loading/Loading";
+
+import { useQuery } from "@apollo/client";
+import { getAlbumTracks } from "../../global/graphql/Queries";
+
 const Tracks = ({ navigation }) => {
+  const { loading, error, data } = useQuery(getAlbumTracks);
+
+  if (loading) return <Loading />;
+  if (error) {
+    console.log(error);
+    return <Text>Error</Text>;
+  }
+
   return (
     <View style={[{ flex: 1 }]}>
       <Image
         resizeMode="cover"
-        source={require("../../assets/images/lyricbg.png")}
+        source={
+          data.albums[0].albumArt
+            ? { uri: data.albums[0].albumArt }
+            : require("../../assets/images/avatar.png")
+        }
         style={[StyleSheet.absoluteFill, { height: "28%", zIndex: -10 }]}
       />
       <View
@@ -31,12 +48,12 @@ const Tracks = ({ navigation }) => {
           <Text
             style={{ fontSize: 35, color: Colors.white, fontWeight: "700" }}
           >
-            Amnehalew
+            {data.albums[0].albumTitle}
           </Text>
           <Text
             style={{ fontSize: 22, color: Colors.white, fontWeight: "300" }}
           >
-            Dawit Getachew
+            {data.albums[0].artist}
           </Text>
           <SeparatorLine />
           <View
@@ -51,8 +68,7 @@ const Tracks = ({ navigation }) => {
               <Text
                 style={{ fontSize: 25, color: Colors.white, fontWeight: "300" }}
               >
-                {" "}
-                10 Tracks
+                {data.albums[0].trackCount} Tracks
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
@@ -77,11 +93,21 @@ const Tracks = ({ navigation }) => {
         </View>
       </View>
       <ScrollView style={{ marginTop: 10 }}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+        {data.albums[0].tracks.map((i) => (
           <TouchableOpacity
-            key={i}
+            key={i.id}
             activeOpacity={0.6}
-            onPress={() => navigation.navigate(routes.lyric)}
+            onPress={() =>
+              navigation.navigate(routes.lyric, {
+                lyric: i.body,
+                title: i.trackTitle,
+                trackNumber: i.trackNumber,
+                albumTitle: data.albums[0].albumTitle,
+                albumArt: data.albums[0].albumArt,
+                artist: data.albums[0].artist,
+                id : i.id,
+              })
+            }
             style={{
               backgroundColor: Colors.white,
               elevation: 5,
@@ -97,7 +123,7 @@ const Tracks = ({ navigation }) => {
               <Text
                 style={{ fontSize: 24, color: Colors.black, fontWeight: "700" }}
               >
-                Amnehalew
+                {i.trackTitle}
               </Text>
               <Text
                 style={{
@@ -106,7 +132,7 @@ const Tracks = ({ navigation }) => {
                   fontWeight: "500",
                 }}
               >
-                Track 2 - 5:06
+                Track {i.trackNumber} - 5:06
               </Text>
             </View>
             <View
