@@ -17,8 +17,6 @@ const getToken = async () => {
     const ttl = jwtDecode(token);
     if (ttl.exp - Math.floor(Date.now() / 1000) <= 0) return null;
     return token;
-    // return await SecureStore.getItemAsync(key);
-    return await SecureStore.getItemAsync(key);
   } catch (error) {
     console.log("Error getting the auth token", error);
   }

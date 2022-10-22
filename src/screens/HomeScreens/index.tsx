@@ -20,22 +20,18 @@ import { useNavigation } from "@react-navigation/native";
 import AuthContext from "../../auth/context";
 import Loading from "../../components/Loading/Loading";
 
-
-import { useQuery } from '@apollo/client'
-import { getAlbums } from '../../global/graphql/Queries'
-
+import { useQuery } from "@apollo/client";
+import { getAlbums } from "../../global/graphql/Queries";
 
 const Home = ({ navigation }) => {
   const [searchKey, setSearchKey] = useState("");
   const { user } = useContext(AuthContext);
   const { loading, error, data } = useQuery(getAlbums);
 
-
-
-  if (loading) return <Loading />
+  if (loading) return <Loading />;
   if (error) {
-    console.log(error)
-    return <Text>Error</Text>
+    console.log(error);
+    return <Text>Error</Text>;
   }
 
   return (
@@ -108,8 +104,8 @@ const Home = ({ navigation }) => {
           contentContainerStyle={{}}
           showsVerticalScrollIndicator={false}
         >
-          {data.albums.map(i => {
-            return <Card key={i.id} album={i} />
+          {data.albums.map((i) => {
+            return <Card key={i.id} album={i} />;
           })}
         </ScrollView>
       </View>
@@ -120,15 +116,17 @@ const Home = ({ navigation }) => {
 export default Home;
 
 type props = {
-  album: object
-}
+  album: object;
+};
 
 const Card = ({ album }: props) => {
   const navigation = useNavigation();
   return (
     <>
       <TouchableOpacity
-        onPress={() => navigation.navigate(routes.tracks)}
+        onPress={() => {
+          navigation.navigate(routes.tracks, { id: album.id });
+        }}
         activeOpacity={0.4}
         style={{
           backgroundColor: "white",
@@ -146,7 +144,11 @@ const Card = ({ album }: props) => {
         <Image
           resizeMethod="resize"
           style={{ width: 70, height: 95, borderRadius: 15, marginRight: 10 }}
-          source={album.albumArt ? { uri: album.albumArt } : require("../../assets/images/avatar.png")}
+          source={
+            album.albumArt
+              ? { uri: album.albumArt }
+              : require("../../assets/images/avatar.png")
+          }
         />
         <View style={{ flexGrow: 1 }}>
           <View>

@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import Colors from "../../constants/Colors";
 import SeparatorLine from "../../components/SeparatorLine/index.tsx";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -11,8 +11,11 @@ import Loading from "../../components/Loading/Loading";
 import { useQuery } from "@apollo/client";
 import { getAlbumTracks } from "../../global/graphql/Queries";
 
-const Tracks = ({ navigation }) => {
-  const { loading, error, data } = useQuery(getAlbumTracks);
+const Tracks = ({ navigation, route }) => {
+  const { id } = route.params;
+  const { loading, error, data } = useQuery(getAlbumTracks, {
+    variables: { id },
+  });
 
   if (loading) return <Loading />;
   if (error) {
@@ -29,11 +32,10 @@ const Tracks = ({ navigation }) => {
             ? { uri: data.albums[0].albumArt }
             : require("../../assets/images/avatar.png")
         }
+        // blurRadius={2}
         style={[StyleSheet.absoluteFill, { height: "28%", zIndex: -10 }]}
       />
-      <View
-        style={{ height: "28%", backgroundColor: "#00000040", padding: 15 }}
-      >
+      <View style={{ height: "28%" }}>
         <View
           style={{
             flexDirection: "row",
@@ -44,7 +46,13 @@ const Tracks = ({ navigation }) => {
             <Icon name="arrow-back" size={30} color={Colors.white} />
           </TouchableOpacity>
         </View>
-        <View style={{ marginTop: "auto" }}>
+        <View
+          style={{
+            marginTop: "auto",
+            backgroundColor: "#00000090",
+            padding: 15,
+          }}
+        >
           <Text
             style={{ fontSize: 35, color: Colors.white, fontWeight: "700" }}
           >
@@ -92,63 +100,94 @@ const Tracks = ({ navigation }) => {
           </View>
         </View>
       </View>
+
       <ScrollView style={{ marginTop: 10 }}>
-        {data.albums[0].tracks.map((i) => (
-          <TouchableOpacity
-            key={i.id}
-            activeOpacity={0.6}
-            onPress={() =>
-              navigation.navigate(routes.lyric, {
-                lyric: i.body,
-                title: i.trackTitle,
-                trackNumber: i.trackNumber,
-                albumTitle: data.albums[0].albumTitle,
-                albumArt: data.albums[0].albumArt,
-                artist: data.albums[0].artist,
-                id : i.id,
-              })
-            }
-            style={{
-              backgroundColor: Colors.white,
-              elevation: 5,
-              shadowColor: "#00000040",
-              borderRadius: 10,
-              marginHorizontal: 10,
-              marginVertical: 5,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={{ marginHorizontal: 15, marginVertical: 5 }}>
-              <Text
-                style={{ fontSize: 24, color: Colors.black, fontWeight: "700" }}
-              >
-                {i.trackTitle}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: Colors.primary,
-                  fontWeight: "500",
-                }}
-              >
-                Track {i.trackNumber} - 5:06
-              </Text>
-            </View>
-            <View
+        {!data.albums[0].tracks.length ? (
+          <View style={{ padding: 15, justifyContent: "center" }}>
+            <Text
               style={{
-                backgroundColor: Colors.grey,
-                borderTopEndRadius: 10,
-                borderBottomEndRadius: 10,
-                width: "20%",
-                justifyContent: "center",
-                alignItems: "center",
+                fontSize: 24,
+                color: Colors.black,
+                fontWeight: "700",
+                textAlign: "center",
               }}
             >
-              <Icon name={"play"} color={Colors.primary} size={35} />
-            </View>
-          </TouchableOpacity>
-        ))}
+              Sorry, there is no registered track for this album for now.
+            </Text>
+            <Text
+              style={{
+                fontSize: 15,
+                color: Colors.primary,
+                fontWeight: "500",
+                textAlign: "center",
+                marginTop: 20,
+              }}
+            >
+              Check again, a while later.
+            </Text>
+          </View>
+        ) : (
+          data.albums[0].tracks.map((i) => (
+            <TouchableOpacity
+              key={i.id}
+              activeOpacity={0.6}
+              onPress={() =>
+                navigation.navigate(routes.lyric, {
+                  lyric: i.body,
+                  title: i.trackTitle,
+                  trackNumber: i.trackNumber,
+                  albumTitle: data.albums[0].albumTitle,
+                  albumArt: data.albums[0].albumArt,
+                  artist: data.albums[0].artist,
+                  id: i.id,
+                })
+              }
+              style={{
+                backgroundColor: Colors.white,
+                elevation: 5,
+                shadowColor: "#00000040",
+                borderRadius: 10,
+                marginHorizontal: 10,
+                marginVertical: 5,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={{ marginHorizontal: 15, marginVertical: 5 }}>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: "700",
+                  }}
+                >
+                  {i.trackTitle}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: Colors.primary,
+                    fontWeight: "500",
+                  }}
+                >
+                  Track {i.trackNumber} - 5:06
+                </Text>
+              </View>
+              <View
+                style={{
+                  backgroundColor: Colors.grey,
+                  borderTopEndRadius: 10,
+                  borderBottomEndRadius: 10,
+                  width: "20%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Icon name={"play"} color={Colors.primary} size={35} />
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
       </ScrollView>
     </View>
   );

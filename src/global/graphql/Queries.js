@@ -33,8 +33,8 @@ export const getTrack = gql`
     }  
 `
 export const getAlbumTracks = gql`
-    {
-        albums(where: {id: {_eq: "46dbf43e-1f8d-4bec-b397-5aae2f2e938c"}}) {
+    query getAlbumTracks($id: uuid) {
+            albums(where: {id: {_eq: $id}}) {
             id
             albumTitle
             trackCount
@@ -43,13 +43,13 @@ export const getAlbumTracks = gql`
             realeaseDate
             albumArt
             tracks(order_by: {trackNumber: asc}) {
-            id
-            trackNumber
-            trackTitle
-            body
-            created_at
-            albumId
-            updated_at
+                id
+                trackNumber
+                trackTitle
+                body
+                created_at
+                albumId
+                updated_at
             }
         }
     }

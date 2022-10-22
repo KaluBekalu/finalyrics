@@ -23,18 +23,19 @@ import {
 
 import { useMutation } from "@apollo/client";
 import { updateTrack } from "../../global/graphql/Mutations";
+
 const Liyric = ({ route, navigation }) => {
   const progress = useRef(new Animated.Value(0)).current;
   const [update, { data, loading, error }] = useMutation(updateTrack);
 
   const { lyric, id, title, albumTitle, trackNumber, artist, albumArt } =
     route.params;
-  const lyricHtml = `<meta name="viewport" content="width=device-width, initial-scale=1.3">
-  ${lyric}
+  const lyricHtml = `<meta name="viewport" content="width=device-width, initial-scale=1">
+    <div style='text-align: center;'>
+      ${lyric}
+    </div>
   `;
-
   const richText = useRef();
-
   const [descHTML, setDescHTML] = useState("");
   const [showDescError, setShowDescError] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
@@ -56,8 +57,7 @@ const Liyric = ({ route, navigation }) => {
     if (replaceWhiteSpace.length <= 0) {
       setShowDescError(true);
     } else {
-      // send data to your server!
-      console.log(descHTML);
+      // send data to server!
       update({
         variables: {
           _id: id,
@@ -140,7 +140,8 @@ const Liyric = ({ route, navigation }) => {
         <SeparatorLine />
         {lyric ? (
           <WebView
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "100%", textAlign: "center" }}
+            containerStyle={{ backgroundColor: "red" }}
             originWhitelist={["*"]}
             source={{ html: lyricHtml }}
           />
@@ -163,45 +164,47 @@ const Liyric = ({ route, navigation }) => {
                 borderRadius: 10,
                 marginVertical: 20,
                 flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <Text
                 style={{
                   fontSize: 20,
-                  fontWeight: "bold",
+                  fontWeight: "500",
                   color: Colors.white,
+                  marginRight: 5,
                 }}
               >
-                Submit lyric?
+                Submit lyric
               </Text>
-              <Icon name="pencil" size={25} color={Colors.white} />
+              <Icon name="pencil" size={18} color={Colors.white} />
             </TouchableOpacity>
           </View>
         ) : (
           <View style={{ flexGrow: 1 }}>
             <RichToolbar
               editor={richText}
-              selectedIconTint="#873c1e"
-              iconTint="#312921"
+              selectedIconTint={Colors.primary}
+              iconTint={Colors.black}
               actions={[
-                actions.insertImage,
+                // actions.insertImage,
+                // actions.insertBulletsList,
+                // actions.insertOrderedList,
+                // actions.insertLink,
+                // actions.setStrikethrough,
                 actions.setBold,
                 actions.setItalic,
-                actions.insertBulletsList,
-                actions.insertOrderedList,
-                actions.insertLink,
-                actions.setStrikethrough,
                 actions.setUnderline,
               ]}
-              style={{}}
             />
-            <KeyboardAvoidingView style={{ flexGrow: 1, borderWidth: 1 }}>
+            <KeyboardAvoidingView style={{ flexGrow: 1, elevation:1 }}>
               <RichEditor
                 ref={richText} // from useRef()
                 onChange={richTextHandle}
                 placeholder="Write your lyric here :)"
                 androidHardwareAccelerationDisabled={true}
-                style={{ borderWidth: 0.5 }}
+                style={{ borderWidth: 0 }}
                 initialHeight={250}
                 scrollEnabled={true}
                 useContainer={false}
